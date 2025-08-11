@@ -1,0 +1,329 @@
+{
+	"info": {
+		"_postman_id": "deals-platform-api",
+		"name": "Deals Platform API",
+		"description": "Полная коллекция API для платформы заключения пари",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Аутентификация",
+			"item": [
+				{
+					"name": "Регистрация пользователя",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Вход пользователя",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Пари",
+			"item": [
+				{
+					"name": "Создание пари",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"description\": \"Кто больше отжиманий сделает за 1 минуту?\",\n    \"startTime\": \"2024-12-20T15:00:00\",\n    \"durationMinutes\": 60\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/deals",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"deals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получение всех пари",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/deals",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"deals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получение пари по ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/deals/{{deal_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"deals",
+								"{{deal_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получение пари по статусу",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/deals/status/OPEN",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"deals",
+								"status",
+								"OPEN"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Участие в пари",
+			"item": [
+				{
+					"name": "Присоединение как участник",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/deals/{{deal_id}}/join/participant",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"deals",
+								"{{deal_id}}",
+								"join",
+								"participant"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Присоединение как наблюдатель",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/deals/{{deal_id}}/join/observer",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"deals",
+								"{{deal_id}}",
+								"join",
+								"observer"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Голосование",
+			"item": [
+				{
+					"name": "Голосование участника",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"vote\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/deals/{{deal_id}}/vote",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"deals",
+								"{{deal_id}}",
+								"vote"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Решение наблюдателя",
+			"item": [
+				{
+					"name": "Финальное решение наблюдателя",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"decision\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/deals/{{deal_id}}/observer-decision",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"deals",
+								"{{deal_id}}",
+								"observer-decision"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "deal_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

@@ -1,0 +1,13 @@
+spring:
+  security:
+    jwt:
+      secret: dealsPlatformSecretKey2024VeryLongAndSecureKeyForJWTTokenGeneration
+      expiration: 86400000 # 24 hours in milliseconds
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.dealsplatform: DEBUG
+    org.springframework.security: DEBUG

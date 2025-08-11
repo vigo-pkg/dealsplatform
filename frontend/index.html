@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deals Platform - Платформа для заключения пари</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-handshake me-2"></i>
+                Deals Platform
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" id="nav-dashboard">Дашборд</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="nav-create-deal">Создать пари</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav" id="auth-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="nav-login">Войти</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="nav-register">Регистрация</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav d-none" id="user-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i>
+                            <span id="user-email"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" id="nav-profile">Профиль</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="nav-logout">Выйти</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <main class="container mt-4">
+        <!-- Дашборд -->
+        <div id="dashboard-page">
+            <div class="row mb-4">
+                <div class="col">
+                    <h1><i class="fas fa-tachometer-alt me-2"></i>Дашборд</h1>
+                    <p class="lead">Добро пожаловать на платформу для заключения пари!</p>
+                </div>
+            </div>
+            
+            <!-- Статистика -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-handshake fa-2x text-primary mb-2"></i>
+                            <h5 class="card-title" id="total-deals">0</h5>
+                            <p class="card-text">Всего пари</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-play fa-2x text-success mb-2"></i>
+                            <h5 class="card-title" id="active-deals">0</h5>
+                            <p class="card-text">Активные пари</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                            <h5 class="card-title" id="pending-deals">0</h5>
+                            <p class="card-text">Ожидают голосования</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-check-circle fa-2x text-info mb-2"></i>
+                            <h5 class="card-title" id="resolved-deals">0</h5>
+                            <p class="card-text">Разрешенные пари</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Список пари -->
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-list me-2"></i>
+                                Список пари
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="deals-list">
+                                <!-- Пари будут загружены динамически -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Страница создания пари -->
+        <div id="create-deal-page" class="d-none">
+            <div class="row">
+                <div class="col-md-8 mx-auto">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-plus me-2"></i>
+                                Создать новое пари
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="create-deal-form">
+                                <div class="mb-3">
+                                    <label for="deal-description" class="form-label">Описание пари</label>
+                                    <textarea class="form-control" id="deal-description" rows="3" required 
+                                              placeholder="Опишите суть пари..."></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="deal-start-time" class="form-label">Время старта</label>
+                                            <input type="datetime-local" class="form-control" id="deal-start-time" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="deal-duration" class="form-label">Длительность (минуты)</label>
+                                            <input type="number" class="form-control" id="deal-duration" min="1" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>
+                                        Создать пари
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Страница пари -->
+        <div id="deal-detail-page" class="d-none">
+            <div class="row">
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">
+                                <i class="fas fa-handshake me-2"></i>
+                                <span id="deal-title"></span>
+                            </h5>
+                            <button class="btn btn-outline-secondary btn-sm" id="back-to-dashboard">
+                                <i class="fas fa-arrow-left me-1"></i>
+                                Назад
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="deal-content">
+                                <!-- Детали пари будут загружены динамически -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Модальные окна -->
+    <!-- Модальное окно входа -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Вход в систему</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="login-form">
+                        <div class="mb-3">
+                            <label for="login-email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="login-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="login-password" class="form-label">Пароль</label>
+                            <input type="password" class="form-control" id="login-password" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Войти</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно регистрации -->
+    <div class="modal fade" id="registerModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Регистрация</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="register-form">
+                        <div class="mb-3">
+                            <label for="register-email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="register-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="register-password" class="form-label">Пароль</label>
+                            <input type="password" class="form-control" id="register-password" minlength="6" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="register-confirm-password" class="form-label">Подтвердите пароль</label>
+                            <input type="password" class="form-control" id="register-confirm-password" minlength="6" required>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно голосования -->
+    <div class="modal fade" id="voteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Голосование</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Выберите ваш результат:</p>
+                    <form id="vote-form">
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-success btn-lg" data-vote="true">
+                                <i class="fas fa-trophy me-2"></i>
+                                Я выиграл!
+                            </button>
+                            <button type="button" class="btn btn-danger btn-lg" data-vote="false">
+                                <i class="fas fa-times me-2"></i>
+                                Я проиграл
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно решения наблюдателя -->
+    <div class="modal fade" id="observerDecisionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Решение наблюдателя</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Вынесите финальное решение:</p>
+                    <form id="observer-decision-form">
+                        <div class="d-grid gap-2">
+                            <button type="button" class="btn btn-success btn-lg" data-decision="true">
+                                <i class="fas fa-trophy me-2"></i>
+                                Первая сторона выиграла
+                            </button>
+                            <button type="button" class="btn btn-danger btn-lg" data-decision="false">
+                                <i class="fas fa-times me-2"></i>
+                                Вторая сторона выиграла
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Уведомления -->
+    <div id="notifications" class="position-fixed top-0 end-0 p-3" style="z-index: 1050;"></div>
+
+    <!-- Скрипты -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+FROM openjdk:17-jdk-slim
+
+WORKDIR /app
+
+# Копируем Maven файлы
+COPY pom.xml .
+COPY src ./src
+
+# Устанавливаем Maven
+RUN apt-get update && apt-get install -y maven
+
+# Собираем приложение
+RUN mvn clean package -DskipTests
+
+# Удаляем Maven и исходники
+RUN apt-get remove -y maven && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
+
+# Копируем собранный JAR
+RUN cp target/*.jar app.jar
+
+# Удаляем исходники и target
+RUN rm -rf src target pom.xml
+
+# Открываем порт
+EXPOSE 8080
+
+# Запускаем приложение
+ENTRYPOINT ["java", "-jar", "app.jar"]

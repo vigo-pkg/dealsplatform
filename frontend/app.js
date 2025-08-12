@@ -1,5 +1,9 @@
-// Конфигурация API
-const API_BASE_URL = 'http://localhost:8080/api';
+// Конфигурация API - использует настройки из config.js
+const API_BASE_URL = FRONTEND_CONFIG.getApiBaseUrl();
+
+console.log('🌐 API Base URL:', API_BASE_URL);
+console.log('📍 Current location:', window.location.href);
+console.log('🏠 Hostname:', window.location.hostname);
 
 // Глобальные переменные
 let currentUser = null;

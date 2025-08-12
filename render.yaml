@@ -7,8 +7,10 @@ services:
     buildCommand: docker build -t deals-platform .
     startCommand: docker run -p $PORT:8080 deals-platform
     envVars:
+      # Активируем профиль postgres для использования DatabaseConfig
       - key: SPRING_PROFILES_ACTIVE
         value: postgres
+      # Render.com автоматически создаст эти переменные из PostgreSQL сервиса
       - key: SPRING_DATASOURCE_URL
         fromDatabase:
           name: deals-platform-postgres
@@ -21,12 +23,23 @@ services:
         fromDatabase:
           name: deals-platform-postgres
           property: password
+      # JWT настройки
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRATION
         value: 86400000
+      # Порт сервера
       - key: SERVER_PORT
         value: 8080
+      # Дополнительные настройки для стабильности
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
+      - key: SPRING_JPA_SHOW_SQL
+        value: false
+      - key: LOGGING_LEVEL_COM_DEALSPLATFORM
+        value: INFO
+      - key: LOGGING_LEVEL_ORG_HIBERNATE_SQL
+        value: WARN
 
 databases:
   - name: deals-platform-postgres

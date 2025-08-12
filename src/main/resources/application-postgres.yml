@@ -1,5 +1,6 @@
 spring:
   datasource:
+    # Render.com предоставляет connectionString, который преобразуется в DatabaseConfig
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/deals_platform}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
@@ -7,7 +8,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -26,7 +27,10 @@ server:
 
 logging:
   level:
-    com.dealsplatform: DEBUG
-    org.springframework.security: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    com.dealsplatform: INFO
+    org.springframework.security: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+    # Логирование подключения к БД
+    com.zaxxer.hikari: INFO
+    org.springframework.jdbc: INFO

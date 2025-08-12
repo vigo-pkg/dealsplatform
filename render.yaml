@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: deals-platform-backend
+    env: docker
+    plan: starter
+    region: frankfurt
+    buildCommand: docker build -t deals-platform .
+    startCommand: docker run -p $PORT:8080 deals-platform
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: postgres
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: deals-platform-postgres
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: deals-platform-postgres
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: deals-platform-postgres
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRATION
+        value: 86400000
+      - key: SERVER_PORT
+        value: 8080
+
+databases:
+  - name: deals-platform-postgres
+    databaseName: deals_platform
+    user: deals_platform_user
+    plan: starter
+    region: frankfurt

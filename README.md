@@ -98,6 +98,69 @@ spring:
 
 ## 🐳 Docker
 
+### Запуск с Docker
+
+#### Production профиль (PostgreSQL)
+```bash
+# Запуск с PostgreSQL базой данных
+./start_docker_production.sh
+
+# Или вручную
+docker-compose up --build -d
+```
+
+#### Development профиль (H2)
+```bash
+# Запуск с H2 in-memory базой данных
+./start_docker_dev.sh
+
+# Или вручную
+docker-compose -f docker-compose.dev.yml up --build -d
+```
+
+#### Управление контейнерами
+```bash
+# Просмотр логов
+docker-compose logs -f backend
+
+# Остановка
+docker-compose down
+
+# Пересборка
+docker-compose up --build -d
+```
+
+### Docker файлы
+- **`Dockerfile`** - Production образ с PostgreSQL профилем
+- **`Dockerfile.dev`** - Development образ с H2 профилем
+- **`docker-compose.yml`** - Production stack с PostgreSQL
+- **`docker-compose.dev.yml`** - Development stack с H2
+
+## ☁️ Облачное развертывание
+
+### Render.com (Рекомендуется)
+
+Deals Platform готов к развертыванию на Render.com с автоматическим использованием PostgreSQL сервиса.
+
+#### Быстрое развертывание
+1. **Подключите репозиторий** к Render.com
+2. **Используйте `render.yaml`** для автоматической настройки
+3. **Получите HTTPS URL** автоматически
+
+#### Файлы для Render.com
+- **`render.yaml`** - автоматическая конфигурация сервисов
+- **`env.example`** - пример переменных окружения
+- **`Dockerfile`** - оптимизирован для облака
+
+#### Преимущества
+- ✅ **Автоматическое развертывание** из Git
+- ✅ **Встроенный PostgreSQL** сервис
+- ✅ **SSL сертификаты** автоматически
+- ✅ **Мониторинг** и логи
+- ✅ **Масштабирование** по требованию
+
+Подробная документация: [`docs/RENDER_DEPLOYMENT.md`](./docs/RENDER_DEPLOYMENT.md)
+
 ```bash
 # Сборка и запуск
 docker-compose up -d

@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://dbpostgres_p4tp_user:1RCarCNAGp1MF4pqlMZxhiO0TAgirOAZ@dpg-d2d7naruibrs739bgkd0-a.frankfurt-postgres.render.com/dbpostgres_p4tp
-    username: dbpostgres_p4tp_user
-    password: 1RCarCNAGp1MF4pqlMZxhiO0TAgirOAZ
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/deals_platform}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

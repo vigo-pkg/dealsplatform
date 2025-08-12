@@ -1,36 +1,21 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:15
-    container_name: deals_platform_postgres
-    environment:
-      POSTGRES_DB: deals_platform
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - deals_platform_network
-
   backend:
     build: .
     container_name: deals_platform_backend
     ports:
       - "8080:8080"
-    depends_on:
-      - postgres
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/deals_platform
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: postgres
+      # Профиль postgres будет активирован через Dockerfile
+      # Настройки базы данных берутся из application-postgres.yml
+      SPRING_PROFILES_ACTIVE: postgres
+      # Переменные окружения для Render.com PostgreSQL
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
     networks:
       - deals_platform_network
-
-volumes:
-  postgres_data:
 
 networks:
   deals_platform_network:

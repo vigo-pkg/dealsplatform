@@ -2,10 +2,10 @@ services:
   - type: web
     name: deals-platform-backend
     env: docker
+    dockerContext: .
+    dockerfilePath: ./Dockerfile
     plan: starter
     region: frankfurt
-    buildCommand: docker build -t deals-platform .
-    startCommand: docker run -p $PORT:8080 deals-platform
     envVars:
       # Активируем профиль postgres для использования DatabaseConfig
       - key: SPRING_PROFILES_ACTIVE

@@ -19,6 +19,8 @@ public class DealResponseDto {
     private List<ParticipantDto> participants;
     private List<ObserverDto> observers;
     private List<VoteDto> votes;
+    private List<DealApplicationResponseDto> pendingApplications; // Только для создателя
+    private DealApplicationResponseDto userApplication; // Заявка текущего пользователя (если есть)
     
     // Constructors
     public DealResponseDto() {}
@@ -126,6 +128,22 @@ public class DealResponseDto {
     
     public void setVotes(List<VoteDto> votes) {
         this.votes = votes;
+    }
+    
+    public List<DealApplicationResponseDto> getPendingApplications() {
+        return pendingApplications;
+    }
+    
+    public void setPendingApplications(List<DealApplicationResponseDto> pendingApplications) {
+        this.pendingApplications = pendingApplications;
+    }
+    
+    public DealApplicationResponseDto getUserApplication() {
+        return userApplication;
+    }
+    
+    public void setUserApplication(DealApplicationResponseDto userApplication) {
+        this.userApplication = userApplication;
     }
     
     // Inner DTOs

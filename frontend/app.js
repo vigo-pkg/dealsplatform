@@ -231,20 +231,47 @@ function getActionButtons(deal) {
     const isParticipant = deal.participants.some(p => p.email === currentUser.email);
     const isObserver = deal.observers.some(o => o.email === currentUser.email);
     const canVote = deal.status === 'IMPLEMENTED' && isParticipant;
-    const canObserve = deal.status !== 'RESOLVED' && !isParticipant && !isObserver;
+    const isCreator = deal.creatorId == currentUser.id; // Используем == для сравнения числа и строки
+    
+    // Проверяем статус заявки пользователя
+    const userApplication = deal.userApplication;
+    const hasPendingApplication = userApplication && userApplication.status === 'PENDING';
+    const hasApprovedApplication = userApplication && userApplication.status === 'APPROVED';
+    const hasRejectedApplication = userApplication && userApplication.status === 'REJECTED';
     
     let buttons = '';
     
-    if (deal.status === 'OPEN' && !isParticipant) {
-        buttons += `<button class="btn btn-success btn-sm" onclick="joinAsParticipant(${deal.id})">
-            <i class="fas fa-user-plus me-1"></i>Участвовать
+    // Кнопки для подачи заявок (только если нет активной заявки и не является участником/наблюдателем)
+    if (deal.status === 'OPEN' && !isParticipant && !hasPendingApplication && !hasApprovedApplication) {
+        buttons += `<button class="btn btn-success btn-sm" onclick="createApplication(${deal.id}, 'PARTICIPANT')">
+            <i class="fas fa-user-plus me-1"></i>Подать заявку на участие
         </button>`;
     }
     
-    if (canObserve) {
-        buttons += `<button class="btn btn-info btn-sm" onclick="joinAsObserver(${deal.id})">
-            <i class="fas fa-eye me-1"></i>Наблюдать
+    if (deal.status !== 'RESOLVED' && !isParticipant && !isObserver && !hasPendingApplication && !hasApprovedApplication) {
+        buttons += `<button class="btn btn-info btn-sm" onclick="createApplication(${deal.id}, 'OBSERVER')">
+            <i class="fas fa-eye me-1"></i>Подать заявку на наблюдение
         </button>`;
+    }
+    
+    // Показываем статус заявки
+    if (hasPendingApplication) {
+        const appType = userApplication.applicationType === 'PARTICIPANT' ? 'участие' : 'наблюдение';
+        buttons += `<span class="badge bg-warning me-2">Заявка на ${appType} ожидает рассмотрения</span>`;
+        buttons += `<button class="btn btn-outline-secondary btn-sm" onclick="withdrawApplication(${deal.id}, ${userApplication.id})">
+            <i class="fas fa-times me-1"></i>Отозвать заявку
+        </button>`;
+    }
+    
+    if (hasRejectedApplication) {
+        const appType = userApplication.applicationType === 'PARTICIPANT' ? 'участие' : 'наблюдение';
+        buttons += `<span class="badge bg-danger me-2">Заявка на ${appType} отклонена</span>`;
+        // Можно подать новую заявку
+        if (deal.status === 'OPEN' && !isParticipant) {
+            buttons += `<button class="btn btn-success btn-sm" onclick="createApplication(${deal.id}, 'PARTICIPANT')">
+                <i class="fas fa-redo me-1"></i>Подать заявку снова
+            </button>`;
+        }
     }
     
     if (canVote) {
@@ -346,6 +373,33 @@ function renderDealDetail(deal) {
                                 </span>
                             </div>
                             <small class="text-muted">Проголосовал: ${formatDateTime(v.votedAt)}</small>
+                        </div>
+                    `).join('')}
+                </div>
+                ` : ''}
+                
+                ${deal.pendingApplications && deal.pendingApplications.length > 0 ? `
+                <div class="deal-detail-section">
+                    <h6>Ожидающие заявки (${deal.pendingApplications.length})</h6>
+                    ${deal.pendingApplications.map(app => `
+                        <div class="application-item mb-3 p-3 border rounded">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <strong>${app.applicantEmail}</strong>
+                                    <span class="badge ${app.applicationType === 'PARTICIPANT' ? 'bg-success' : 'bg-info'} ms-2">
+                                        ${app.applicationType === 'PARTICIPANT' ? 'Участник' : 'Наблюдатель'}
+                                    </span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-success btn-sm me-1" onclick="approveApplication(${deal.id}, ${app.id})">
+                                        <i class="fas fa-check me-1"></i>Одобрить
+                                    </button>
+                                    <button class="btn btn-danger btn-sm" onclick="rejectApplication(${deal.id}, ${app.id})">
+                                        <i class="fas fa-times me-1"></i>Отклонить
+                                    </button>
+                                </div>
+                            </div>
+                            <small class="text-muted">Подана: ${formatDateTime(app.createdAt)}</small>
                         </div>
                     `).join('')}
                 </div>
@@ -524,22 +578,51 @@ async function handleCreateDeal(event) {
     }
 }
 
-// Присоединение к пари
-async function joinAsParticipant(dealId) {
+// Работа с заявками
+async function createApplication(dealId, applicationType) {
     try {
-        await apiCall(`/deals/${dealId}/join/participant`, 'POST');
-        showNotification('Успех', 'Вы присоединились как участник!', 'success');
-        loadDashboard();
+        await apiCall(`/deals/${dealId}/applications`, 'POST', { applicationType });
+        const typeText = applicationType === 'PARTICIPANT' ? 'участие' : 'наблюдение';
+        showNotification('Успех', `Заявка на ${typeText} подана!`, 'success');
+        if (currentDealId === dealId) {
+            loadDealDetail(dealId);
+        } else {
+            loadDashboard();
+        }
     } catch (error) {
         showNotification('Ошибка', error.message, 'error');
     }
 }
 
-async function joinAsObserver(dealId) {
+async function approveApplication(dealId, applicationId) {
     try {
-        await apiCall(`/deals/${dealId}/join/observer`, 'POST');
-        showNotification('Успех', 'Вы присоединились как наблюдатель!', 'success');
-        loadDashboard();
+        await apiCall(`/deals/${dealId}/applications/${applicationId}/approve`, 'POST');
+        showNotification('Успех', 'Заявка одобрена!', 'success');
+        loadDealDetail(dealId);
+    } catch (error) {
+        showNotification('Ошибка', error.message, 'error');
+    }
+}
+
+async function rejectApplication(dealId, applicationId) {
+    try {
+        await apiCall(`/deals/${dealId}/applications/${applicationId}/reject`, 'POST');
+        showNotification('Успех', 'Заявка отклонена', 'info');
+        loadDealDetail(dealId);
+    } catch (error) {
+        showNotification('Ошибка', error.message, 'error');
+    }
+}
+
+async function withdrawApplication(dealId, applicationId) {
+    try {
+        await apiCall(`/deals/${dealId}/applications/${applicationId}`, 'DELETE');
+        showNotification('Успех', 'Заявка отозвана', 'info');
+        if (currentDealId === dealId) {
+            loadDealDetail(dealId);
+        } else {
+            loadDashboard();
+        }
     } catch (error) {
         showNotification('Ошибка', error.message, 'error');
     }

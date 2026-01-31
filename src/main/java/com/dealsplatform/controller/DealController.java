@@ -1,9 +1,6 @@
 package com.dealsplatform.controller;
 
-import com.dealsplatform.dto.DealCreateDto;
-import com.dealsplatform.dto.DealResponseDto;
-import com.dealsplatform.dto.DealVoteDto;
-import com.dealsplatform.dto.ObserverDecisionDto;
+import com.dealsplatform.dto.*;
 import com.dealsplatform.entity.DealStatus;
 import com.dealsplatform.service.DealService;
 import com.dealsplatform.service.UserService;
@@ -46,7 +43,8 @@ public class DealController {
     @GetMapping("/{dealId}")
     @Operation(summary = "Получение пари по ID", description = "Возвращает детальную информацию о пари")
     public ResponseEntity<DealResponseDto> getDealById(@PathVariable Long dealId) {
-        DealResponseDto deal = dealService.getDealById(dealId);
+        Long currentUserId = userService.getCurrentUser() != null ? userService.getCurrentUser().getId() : null;
+        DealResponseDto deal = dealService.getDealById(dealId, currentUserId);
         return ResponseEntity.ok(deal);
     }
     
@@ -57,16 +55,74 @@ public class DealController {
         return ResponseEntity.ok(deals);
     }
     
+    @PostMapping("/{dealId}/applications")
+    @Operation(summary = "Подача заявки на присоединение", description = "Подает заявку на присоединение к пари (как участник или наблюдатель)")
+    public ResponseEntity<DealResponseDto> createApplication(
+            @PathVariable Long dealId,
+            @Valid @RequestBody DealApplicationDto applicationDto) {
+        Long currentUserId = userService.getCurrentUser().getId();
+        DealResponseDto response = dealService.createApplication(dealId, currentUserId, applicationDto);
+        return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/{dealId}/applications")
+    @Operation(summary = "Получение всех заявок", description = "Возвращает все заявки на присоединение к пари (только для создателя)")
+    public ResponseEntity<List<DealApplicationResponseDto>> getApplications(@PathVariable Long dealId) {
+        Long currentUserId = userService.getCurrentUser().getId();
+        List<DealApplicationResponseDto> applications = dealService.getApplicationsByDealId(dealId, currentUserId);
+        return ResponseEntity.ok(applications);
+    }
+    
+    @GetMapping("/{dealId}/applications/pending")
+    @Operation(summary = "Получение ожидающих заявок", description = "Возвращает ожидающие заявки на присоединение к пари (только для создателя)")
+    public ResponseEntity<List<DealApplicationResponseDto>> getPendingApplications(@PathVariable Long dealId) {
+        Long currentUserId = userService.getCurrentUser().getId();
+        List<DealApplicationResponseDto> applications = dealService.getPendingApplicationsByDealId(dealId, currentUserId);
+        return ResponseEntity.ok(applications);
+    }
+    
+    @PostMapping("/{dealId}/applications/{applicationId}/approve")
+    @Operation(summary = "Одобрение заявки", description = "Одобряет заявку на присоединение (только для создателя)")
+    public ResponseEntity<DealResponseDto> approveApplication(
+            @PathVariable Long dealId,
+            @PathVariable Long applicationId) {
+        Long currentUserId = userService.getCurrentUser().getId();
+        DealResponseDto response = dealService.approveApplication(dealId, applicationId, currentUserId);
+        return ResponseEntity.ok(response);
+    }
+    
+    @PostMapping("/{dealId}/applications/{applicationId}/reject")
+    @Operation(summary = "Отклонение заявки", description = "Отклоняет заявку на присоединение (только для создателя)")
+    public ResponseEntity<DealResponseDto> rejectApplication(
+            @PathVariable Long dealId,
+            @PathVariable Long applicationId) {
+        Long currentUserId = userService.getCurrentUser().getId();
+        DealResponseDto response = dealService.rejectApplication(dealId, applicationId, currentUserId);
+        return ResponseEntity.ok(response);
+    }
+    
+    @DeleteMapping("/{dealId}/applications/{applicationId}")
+    @Operation(summary = "Отзыв заявки", description = "Отзывает свою заявку на присоединение")
+    public ResponseEntity<DealResponseDto> withdrawApplication(
+            @PathVariable Long dealId,
+            @PathVariable Long applicationId) {
+        Long currentUserId = userService.getCurrentUser().getId();
+        DealResponseDto response = dealService.withdrawApplication(dealId, applicationId, currentUserId);
+        return ResponseEntity.ok(response);
+    }
+    
+    @Deprecated
     @PostMapping("/{dealId}/join/participant")
-    @Operation(summary = "Присоединение как участник", description = "Присоединяет текущего пользователя как участника пари")
+    @Operation(summary = "Присоединение как участник (устаревший)", description = "Устаревший метод. Используйте POST /{dealId}/applications")
     public ResponseEntity<DealResponseDto> joinAsParticipant(@PathVariable Long dealId) {
         Long currentUserId = userService.getCurrentUser().getId();
         DealResponseDto response = dealService.joinAsParticipant(dealId, currentUserId);
         return ResponseEntity.ok(response);
     }
     
+    @Deprecated
     @PostMapping("/{dealId}/join/observer")
-    @Operation(summary = "Присоединение как наблюдатель", description = "Присоединяет текущего пользователя как наблюдателя пари")
+    @Operation(summary = "Присоединение как наблюдатель (устаревший)", description = "Устаревший метод. Используйте POST /{dealId}/applications")
     public ResponseEntity<DealResponseDto> joinAsObserver(@PathVariable Long dealId) {
         Long currentUserId = userService.getCurrentUser().getId();
         DealResponseDto response = dealService.joinAsObserver(dealId, currentUserId);

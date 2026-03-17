@@ -1,10 +1,11 @@
+# Workspace Professional — отдельно в аккаунте; здесь plan = тип инстанса (pro/basic и т.д.)
 services:
   - type: web
     name: deals-platform-backend
     env: docker
     dockerContext: .
     dockerfilePath: ./Dockerfile
-    plan: standard
+    plan: basic
     region: frankfurt
     envVars:
       # Активируем профиль postgres для использования DatabaseConfig
@@ -45,5 +46,5 @@ databases:
   - name: deals-platform-postgres
     databaseName: deals_platform
     user: deals_platform_user
-    plan: standard
+    plan: basic
     region: frankfurt

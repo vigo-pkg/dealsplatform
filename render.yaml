@@ -4,7 +4,7 @@ services:
     env: docker
     dockerContext: .
     dockerfilePath: ./Dockerfile
-    plan: pro
+    plan: standard
     region: frankfurt
     envVars:
       # Активируем профиль postgres для использования DatabaseConfig
@@ -45,5 +45,5 @@ databases:
   - name: deals-platform-postgres
     databaseName: deals_platform
     user: deals_platform_user
-    plan: pro
+    plan: standard
     region: frankfurt

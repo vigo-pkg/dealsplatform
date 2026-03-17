@@ -45,5 +45,5 @@ databases:
   - name: deals-platform-postgres
     databaseName: deals_platform
     user: deals_platform_user
-    plan: starter
+    plan: basic
     region: frankfurt

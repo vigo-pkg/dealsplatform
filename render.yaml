@@ -1,4 +1,4 @@
-# Web: starter | standard | pro. Postgres: free | basic | pro | accelerated (не смешивать планы).
+# Postgres plan: только новые типы — basic-256mb, basic-1gb, basic-4gb, pro-4gb, pro-8gb, … (не starter/pro без суффикса).
 services:
   - type: web
     name: deals-platform-backend
@@ -46,5 +46,5 @@ databases:
   - name: deals-platform-postgres
     databaseName: deals_platform
     user: deals_platform_user
-    plan: starter
+    plan: basic-1gb
     region: frankfurt

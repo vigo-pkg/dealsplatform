@@ -1,7 +1,7 @@
 // Конфигурация Deals Platform Frontend
 const FRONTEND_CONFIG = {
     // API Base URL для Render.com (замените на ваш URL)
-    RENDER_API_BASE_URL: 'https://dealsplatform.onrender.com/api',
+    RENDER_API_BASE_URL: 'https://dealsplatform-rzw5.onrender.com/api',
     
     // Локальный API URL для разработки
     LOCAL_API_BASE_URL: 'http://localhost:8080/api',
